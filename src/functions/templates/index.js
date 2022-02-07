@@ -10,7 +10,6 @@ const { templatesUrl, apiHeader, templateSelectOpts } = constants;
 
 const getTemplates = async (teamId, token) => {
   cli.action.start("Fetching Templates");
-  const template_data = [];
 
   const apiUrl = templatesUrl;
   const apiData = JSON.stringify({
@@ -19,6 +18,7 @@ const getTemplates = async (teamId, token) => {
       selectOpts: templateSelectOpts,
       whereOpts: {
         teamId: teamId,
+        templateTypes: [0, 1],
       },
     },
   });
@@ -29,6 +29,59 @@ const getTemplates = async (teamId, token) => {
   });
 
   const templates = _.get(data.result.success, "templates");
+
+  if (templates) {
+    templates.forEach((value) => {
+      const {
+        lastAuthoredAt,
+        publishedAt,
+        archivedAt,
+        lastModifiedAt,
+        lastAuthor,
+        originalAuthor,
+        attributes,
+        typ,
+      } = value;
+
+      const metadataEntry = _.get(value, "metadataEntry");
+      const lastAuthorName = _.get(lastAuthor, "name");
+      const originalAuthorName = _.get(originalAuthor, "name");
+      const newAuthoredAt = new Date(lastAuthoredAt * 1000).toISOString();
+      const newPublishedAt = new Date(publishedAt * 1000).toISOString();
+      const newArchivedAt = new Date(archivedAt * 1000).toISOString();
+      const newModifiedAt = new Date(lastModifiedAt * 1000).toISOString();
+      const attributesLabel = [];
+      const parameters = [];
+
+      metadataEntry.forEach((data) => {
+        const { value, key } = data;
+        const text = _.get(value, "text");
+
+        parameters.push(`${key}: ${text}`);
+      });
+
+      attributes.forEach((value) => {
+        const { values, label } = value;
+        const attributesData = [];
+        values.forEach((data) => {
+          const { label } = data;
+          attributesData.push(label);
+        });
+
+        attributesLabel.push(`${label}: ${attributesData.toString()}`);
+      });
+
+      value["lastAuthoredAt"] = newAuthoredAt;
+      value["publishedAt"] = newPublishedAt;
+      value["archivedAt"] = archivedAt === 0 ? archivedAt : newArchivedAt;
+      value["lastModifiedAt"] = newModifiedAt;
+      value["lastAuthor"] = lastAuthorName;
+      value["originalAuthor"] = originalAuthorName;
+      value["attributes"] = attributesLabel.toString();
+      value["parameters"] = parameters.toString();
+      value["typ"] = typ === 0 ? "Current" : "Archived";
+    });
+  }
 
   cli.action.stop();
   return templates;

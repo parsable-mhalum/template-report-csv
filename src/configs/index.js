@@ -32,84 +32,60 @@ const templateSelectOpts = {
 
 const fileHeaders = [
   {
-    id: "id",
-    title: "id",
-  },
-  {
-    id: "internalVersion",
-    title: "internalVersion",
-  },
-  {
-    id: "publicVersion",
-    title: "publicVersion",
+    id: "publishedVersion",
+    title: "Published Version",
   },
   {
     id: "title",
-    title: "title",
+    title: "Title",
   },
   {
     id: "descrip",
-    title: "descrip",
+    title: "Description",
   },
   {
     id: "status",
-    title: "status",
-  },
-  {
-    id: "stepGroupId",
-    title: "stepGroupId",
-  },
-  {
-    id: "teamId",
-    title: "teamId",
-  },
-  {
-    id: "UNSUPPORTEDdocumentEmailAddress",
-    title: "UNSUPPORTEDdocumentEmailAddress",
+    title: "Status",
   },
   {
     id: "lastAuthoredAt",
-    title: "lastAuthoredAt",
+    title: "Last Authored At",
   },
   {
     id: "publishedAt",
-    title: "publishedAt",
+    title: "Published At",
   },
   {
     id: "archivedAt",
-    title: "archivedAt",
-  },
-  {
-    id: "lastAuthorId",
-    title: "lastAuthorId",
-  },
-  {
-    id: "system",
-    title: "system",
-  },
-  {
-    id: "metadataEntry",
-    title: "metadataEntry",
-  },
-  {
-    id: "metadataById",
-    title: "metadataById",
-  },
-  {
-    id: "publishedVersion",
-    title: "publishedVersion",
-  },
-  {
-    id: "typ",
-    title: "typ",
-  },
-  {
-    id: "drafts",
-    title: "drafts",
+    title: "Archived At",
   },
   {
     id: "lastModifiedAt",
     title: "lastModifiedAt",
+  },
+  {
+    id: "typ",
+    title: "Type",
+  },
+  {
+    id: "drafts",
+    title: "Drafts",
+  },
+  {
+    id: "attributes",
+    title: "Attributes",
+  },
+  {
+    id: "parameters",
+    title: "Parameters",
+  },
+  {
+    id: "originalAuthor",
+    title: "Original Author",
+  },
+  {
+    id: "lastAuthor",
+    title: "Last Author",
   },
 ];
 
