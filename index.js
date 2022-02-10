@@ -5,7 +5,7 @@ const templates = require("./src/functions/templates");
 const file_process = require("./src/file_process/write");
 
 const handler = async () => {
-  console.info("Extract Templates with no attributes");
+  console.info("Extract Templates to csv");
   const AUTH_TOKEN = await auth.loginUser();
   const TEAM_DATA = await auth.selectTeam(AUTH_TOKEN);
   const TEMPLATES = await templates.getTemplates(TEAM_DATA.id, AUTH_TOKEN);

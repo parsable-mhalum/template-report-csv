@@ -9,7 +9,7 @@ const { fileHeaders, subdomain } = constants;
 const write = (templates) => {
   cli.action.start("Writing Templates CSV");
   const csvWriter = createCsvWriter({
-    path: `${subdomain}.csv`,
+    path: `${subdomain}-drafts.csv`,
     header: fileHeaders,
   });
 

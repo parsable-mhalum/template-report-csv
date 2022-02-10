@@ -18,7 +18,8 @@ const getTemplates = async (teamId, token) => {
       selectOpts: templateSelectOpts,
       whereOpts: {
         teamId: teamId,
-        templateTypes: [0, 1],
+        isArchived: false,
+        isPublished: false,
       },
     },
   });
@@ -39,11 +40,10 @@ const getTemplates = async (teamId, token) => {
         lastModifiedAt,
         lastAuthor,
         originalAuthor,
-        attributes,
         typ,
       } = value;
-
       const metadataEntry = _.get(value, "metadataEntry");
+      const attributes = _.get(value, "attributes");
       const lastAuthorName = _.get(lastAuthor, "name");
       const originalAuthorName = _.get(originalAuthor, "name");
       const newAuthoredAt = new Date(lastAuthoredAt * 1000).toISOString();
@@ -52,25 +52,24 @@ const getTemplates = async (teamId, token) => {
       const newModifiedAt = new Date(lastModifiedAt * 1000).toISOString();
       const attributesLabel = [];
       const parameters = [];
-
-      metadataEntry.forEach((data) => {
-        const { value, key } = data;
-        const text = _.get(value, "text");
-
-        parameters.push(`${key}: ${text}`);
-      });
-
-      attributes.forEach((value) => {
-        const { values, label } = value;
-        const attributesData = [];
-        values.forEach((data) => {
-          const { label } = data;
-          attributesData.push(label);
+      if (metadataEntry) {
+        metadataEntry.forEach((data) => {
+          const { value, key } = data;
+          const text = _.get(value, "text");
+          parameters.push(`${key}: ${text}`);
         });
-
-        attributesLabel.push(`${label}: ${attributesData.toString()}`);
-      });
-
+      }
+      if (attributes) {
+        attributes.forEach((value) => {
+          const { values, label } = value;
+          const attributesData = [];
+          values.forEach((data) => {
+            const { label } = data;
+            attributesData.push(label);
+          });
+          attributesLabel.push(`${label}: ${attributesData.toString()}`);
+        });
+      }
       value["lastAuthoredAt"] = newAuthoredAt;
       value["publishedAt"] = newPublishedAt;
       value["archivedAt"] = archivedAt === 0 ? archivedAt : newArchivedAt;
@@ -82,6 +81,8 @@ const getTemplates = async (teamId, token) => {
       value["typ"] = typ === 0 ? "Current" : "Archived";
     });
   }
+
+  // console.log(templates);
 
   cli.action.stop();
   return templates;
