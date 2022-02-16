@@ -9,11 +9,13 @@ const templatesUrl = `${BASE_URL}/api/job_templates`;
 const email = EMAIL;
 const password = PASSWORD;
 const subdomain = SUBDOMAIN;
+
 const apiHeader = [
   "Content-Type: application/json",
   "Accept: application/json",
   "Custom-Parsable-Touchstone: parsable-extract-templates",
 ];
+
 const templateSelectOpts = {
   includeTeam: false,
   includeRootHeaders: false,
@@ -89,6 +91,45 @@ const fileHeaders = [
   },
 ];
 
+const auth_prompts = [
+  {
+    type: "text",
+    name: "email",
+    message: "Please enter your email:",
+  },
+  {
+    type: "password",
+    name: "password",
+    message: "Please enter your password:",
+  },
+];
+
+const team_prompt = [
+  {
+    type: "text",
+    name: "subdomain",
+    message: "Please enter your subdomain:",
+  },
+];
+
+const archive_prompt = {
+  type: "toggle",
+  name: "archivedTemplates",
+  message: "Include Archived?",
+  initial: false,
+  active: "yes",
+  inactive: "no",
+};
+
+const drafts_prompt = {
+  type: "toggle",
+  name: "draftTemplates",
+  message: "Include Drafts?",
+  initial: false,
+  active: "yes",
+  inactive: "no",
+};
+
 module.exports = {
   authUrl,
   teamsUrl,
@@ -99,4 +140,8 @@ module.exports = {
   apiHeader,
   templateSelectOpts,
   fileHeaders,
+  auth_prompts,
+  team_prompt,
+  archive_prompt,
+  drafts_prompt,
 };

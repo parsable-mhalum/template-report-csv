@@ -8,7 +8,7 @@ const constants = require("../../configs");
 
 const { templatesUrl, apiHeader, templateSelectOpts } = constants;
 
-const getTemplates = async (teamId, token) => {
+const getTemplates = async (teamId, token, archived, published) => {
   cli.action.start("Fetching Templates");
 
   const apiUrl = templatesUrl;
@@ -18,8 +18,8 @@ const getTemplates = async (teamId, token) => {
       selectOpts: templateSelectOpts,
       whereOpts: {
         teamId: teamId,
-        isArchived: false,
-        isPublished: false,
+        isArchived: archived,
+        isPublished: published,
       },
     },
   });

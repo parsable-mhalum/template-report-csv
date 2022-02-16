@@ -4,9 +4,9 @@ const { Curl, CurlFeature, curly } = require("node-libcurl");
 const { cli } = require("cli-ux");
 
 const constants = require("../../configs");
-const { authUrl, teamsUrl, email, password, subdomain, apiHeader } = constants;
+const { authUrl, teamsUrl, apiHeader } = constants;
 
-const loginUser = async () => {
+const loginUser = async (email, password) => {
   cli.action.start("Logging into Parsable");
 
   const apiUrl = authUrl;
@@ -28,11 +28,10 @@ const loginUser = async () => {
   return data.result.success.authToken;
 };
 
-const selectTeam = async (authToken) => {
+const selectTeam = async (authToken, team) => {
   cli.action.start("Logging into Team");
 
   const apiUrl = teamsUrl;
-  const subDomain = subdomain;
 
   apiHeader.push(`Authorization: Token ${authToken}`);
 
@@ -52,7 +51,7 @@ const selectTeam = async (authToken) => {
 
   success.forEach((item, index) => {
     const { subdomain } = item;
-    if (subDomain === subdomain) {
+    if (team === subdomain) {
       teamData = success[index];
     }
   });

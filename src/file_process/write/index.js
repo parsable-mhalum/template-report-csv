@@ -4,12 +4,14 @@ const { cli } = require("cli-ux");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 const constants = require("../../configs");
 
-const { fileHeaders, subdomain } = constants;
+const { fileHeaders } = constants;
 
-const write = (templates) => {
+const write = (templates, subdomain, published, archived) => {
   cli.action.start("Writing Templates CSV");
   const csvWriter = createCsvWriter({
-    path: `${subdomain}-drafts.csv`,
+    path: `${subdomain}${published ? "-published" : "-drafts"}${
+      archived ? "-archived" : ""
+    }.csv`,
     header: fileHeaders,
   });
 
