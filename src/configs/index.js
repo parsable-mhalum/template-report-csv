@@ -5,7 +5,7 @@ const { BASE_URL, EMAIL, PASSWORD, SUBDOMAIN } = process.env;
 
 const authUrl = `${BASE_URL}/api/auth`;
 const teamsUrl = `${BASE_URL}/api/teams`;
-const templatesUrl = `${BASE_URL}/api/job_templates`;
+const templatesUrl = `${BASE_URL}/api/`;
 const email = EMAIL;
 const password = PASSWORD;
 const subdomain = SUBDOMAIN;
@@ -32,7 +32,23 @@ const templateSelectOpts = {
   includeLastAuthor: true,
 };
 
+const templateSetSelectOpts = {
+  includeTeam: false,
+  includeLastPublished: false,
+  includeLastAuthor: true,
+  includeTemplates: false,
+  includeTags: false,
+  includeCounts: false,
+  includeLastModified: true,
+  includeAttributes: true,
+  includeOriginalAuthor: true,
+};
+
 const fileHeaders = [
+  {
+    id: "id",
+    title: "ID",
+  },
   {
     id: "publishedVersion",
     title: "Published Version",
@@ -52,10 +68,6 @@ const fileHeaders = [
   {
     id: "lastAuthoredAt",
     title: "Last Authored At",
-  },
-  {
-    id: "publishedAt",
-    title: "Published At",
   },
   {
     id: "archivedAt",
@@ -104,6 +116,26 @@ const auth_prompts = [
   },
 ];
 
+const type_prompt = [
+  {
+    type: "select",
+    name: "template_type",
+    message: "Select Template Type:",
+    choices: [
+      {
+        title: "Job Templates",
+        description: "Extract Job Templates",
+        value: "job_templates",
+      },
+      {
+        title: "Template Sets",
+        description: "Extract Template Sets",
+        value: "template_sets",
+      },
+    ],
+  },
+];
+
 const team_prompt = [
   {
     type: "text",
@@ -139,8 +171,10 @@ module.exports = {
   subdomain,
   apiHeader,
   templateSelectOpts,
+  templateSetSelectOpts,
   fileHeaders,
   auth_prompts,
+  type_prompt,
   team_prompt,
   archive_prompt,
   drafts_prompt,

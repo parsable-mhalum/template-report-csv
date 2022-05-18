@@ -1,0 +1,22 @@
+{
+  "templateIds": ["4ddf5199-4328-4bce-92be-3444b92ad24c"],
+  "source": {
+    "teamId": "3ada233c-31c4-48e9-90c3-3dc32d0bbbf8",
+    "email": "martin.halum@parsable.com",
+    "password": "Tidus9908!",
+    "apiBase": "https://api.parsable.net"
+  },
+  "destination": {
+    "teamId": "6671036d-4bce-4128-a38b-9b9c462804a5",
+    "email": "martin.halum@parsable.com",
+    "password": "Tidus9908!",
+    "apiBase": "https://api.parsable.net"
+  },
+  "options": {
+    "includeApplets": false,
+    "includeMetadata": false,
+    "includeProcedureTypes": false,
+    "includeInputTriggers": false
+  },
+  "shouldPublishTemplates": true
+}

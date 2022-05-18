@@ -6,12 +6,12 @@ const constants = require("../../configs");
 
 const { fileHeaders } = constants;
 
-const write = (templates, subdomain, published, archived) => {
+const write = (type, templates, subdomain, published, archived) => {
   cli.action.start("Writing Templates CSV");
   const csvWriter = createCsvWriter({
-    path: `${subdomain}${published ? "-published" : "-drafts"}${
-      archived ? "-archived" : ""
-    }.csv`,
+    path: `${type === "template_sets" ? "TS-" : ""}${subdomain}${
+      published ? "-published" : "-drafts"
+    }${archived ? "-archived" : ""}.csv`,
     header: fileHeaders,
   });
 

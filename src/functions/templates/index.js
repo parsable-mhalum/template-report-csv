@@ -6,16 +6,70 @@ const _ = require("lodash");
 
 const constants = require("../../configs");
 
-const { templatesUrl, apiHeader, templateSelectOpts } = constants;
+const { templatesUrl, apiHeader, templateSelectOpts, templateSetSelectOpts } =
+  constants;
 
-const getTemplates = async (teamId, token, archived, published) => {
+const getToDelete = async () => {
   cli.action.start("Fetching Templates");
 
-  const apiUrl = templatesUrl;
+  const apiUrl = `https://api.eu-west-1.parsable.net/api/jobs`;
+
   const apiData = JSON.stringify({
     method: "query",
     arguments: {
-      selectOpts: templateSelectOpts,
+      selectOpts: {
+        includeTeam: false,
+        includeTemplate: false,
+        includeRootHeaders: false,
+        includeSteps: false,
+        includeDocuments: false,
+        includeUsers: false,
+        includeStats: false,
+        includeActivity: false,
+        includeTemplates: false,
+        includeCreator: false,
+        includeRoles: false,
+        includePermissions: false,
+        includeExecSnippets: false,
+        includeMessages: false,
+        includeIssues: false,
+        includeDeviationCounts: false,
+        includeDeviations: false,
+        includeRefMap: false,
+        includePlannedDataSheetIds: false,
+        includeSnapshottedDataSheetValues: false,
+        includeAttributes: false,
+      },
+      whereOpts: {
+        sourceTemplateIds: ["63679104-6094-49bf-beee-2279092520d7"],
+        teamId: "470234f8-dea8-40be-b687-3a67f346599a",
+        maxCreatedAt: 1641945599,
+      },
+    },
+  });
+
+  const { data } = await curly.get(apiUrl, {
+    httpHeader: [
+      "Authorization:Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTA3MjY2NzEsImlhdCI6MTY0ODEzNDY3MSwiaXNzIjoiYXV0aDpwcm9kdWN0aW9uIiwic2VyYTpzaWQiOiI2M2M5ZjlkMS1mNzliLTQwYWUtODI4OS01MjE2NzAyYjc2NDQiLCJzZXJhOnRlYW1JZCI6IiIsInNlcmE6dHlwIjoiYXV0aCIsInN1YiI6IjBiZWI2NzExLWVmMzAtNDQxYi1iYTg0LTM1NmQ5NmZmYjZmOCJ9.-zFKbkaqyan5zKRVTPQHw86gSFGlaDzXhIxomxI3F4w",
+      "Content-Type:application/json",
+      "Accept:application/json",
+    ],
+    postFields: apiData,
+  });
+
+  console.log(JSON.stringify(data));
+};
+
+const getTemplates = async (teamId, type, archived, published) => {
+  cli.action.start("Fetching Templates");
+
+  const apiUrl = `${templatesUrl}${type}`;
+
+  const apiData = JSON.stringify({
+    method: "query",
+    arguments: {
+      selectOpts:
+        type === "job_templates" ? templateSelectOpts : templateSetSelectOpts,
       whereOpts: {
         teamId: teamId,
         isArchived: archived,
@@ -24,16 +78,22 @@ const getTemplates = async (teamId, token, archived, published) => {
     },
   });
 
-  const { statusCode, data, headers } = await curly.get(apiUrl, {
+  const { data } = await curly.get(apiUrl, {
     httpHeader: apiHeader,
     postFields: apiData,
   });
 
-  const templates = _.get(data.result.success, "templates");
+  const templates = _.get(
+    data.result.success,
+    type === "job_templates" ? "templates" : "templateSets"
+  );
+
+  // console.log(data.result);
 
   if (templates) {
     templates.forEach((value) => {
       const {
+        id,
         lastAuthoredAt,
         publishedAt,
         archivedAt,
@@ -70,6 +130,7 @@ const getTemplates = async (teamId, token, archived, published) => {
           attributesLabel.push(`${label}: ${attributesData.toString()}`);
         });
       }
+      value["id"] = id;
       value["lastAuthoredAt"] = newAuthoredAt;
       value["publishedAt"] = newPublishedAt;
       value["archivedAt"] = archivedAt === 0 ? archivedAt : newArchivedAt;
@@ -81,8 +142,6 @@ const getTemplates = async (teamId, token, archived, published) => {
       value["typ"] = typ === 0 ? "Current" : "Archived";
     });
   }
-
-  // console.log(templates);
 
   cli.action.stop();
   return templates;
@@ -104,6 +163,7 @@ const processTemplates = async (templates) => {
 };
 
 module.exports = {
+  getToDelete,
   getTemplates,
   processTemplates,
 };

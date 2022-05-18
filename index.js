@@ -7,7 +7,13 @@ const auth = require("./src/functions/auth");
 const templates = require("./src/functions/templates");
 const file_process = require("./src/file_process/write");
 const constants = require("./src/configs");
-const { auth_prompts, team_prompt, archive_prompt, drafts_prompt } = constants;
+const {
+  auth_prompts,
+  type_prompt,
+  team_prompt,
+  archive_prompt,
+  drafts_prompt,
+} = constants;
 
 const handler = async () => {
   await storage.init({
@@ -21,6 +27,7 @@ const handler = async () => {
   let archived = false;
   let published = false;
   let team = "";
+  let type = "";
   let error = false;
 
   console.info("Extract Templates to csv");
@@ -29,6 +36,13 @@ const handler = async () => {
       login: {
         description: "Login into Parsable Account",
         alias: "l",
+        type: "string",
+      },
+    })
+    .command("type", "Extract Template Type", {
+      jobTemplate: {
+        description: "Extract data for job templates or template sets",
+        alias: "ty",
         type: "string",
       },
     })
@@ -71,6 +85,14 @@ const handler = async () => {
     await storage.setItem("AUTH_TOKEN", authToken);
   }
 
+  if (argv.ty === undefined) {
+    const { template_type } = await prompts(type_prompt);
+
+    type = template_type;
+  } else {
+    type = argv.ty;
+  }
+
   if (argv.t === undefined) {
     const { subdomain } = await prompts(team_prompt);
     team = subdomain;
@@ -109,13 +131,13 @@ const handler = async () => {
   if (!error) {
     const TEMPLATES = await templates.getTemplates(
       TEAM_DATA.id,
-      authToken,
+      type,
       archived,
       published
     );
-    const FINAL_DATA = await templates.processTemplates(TEMPLATES);
+    // const FINAL_DATA = await templates.processTemplates(TEMPLATES);
 
-    await file_process.write(TEMPLATES, team, published, archived);
+    await file_process.write(type, TEMPLATES, team, published, archived);
   }
 };
 
