@@ -1,13 +1,20 @@
 #!/usr/bin/env node
 
-const { Curl, CurlFeature, curly } = require("node-libcurl");
+const { curly } = require("node-libcurl");
 const { cli } = require("cli-ux");
+const nodemailer = require("nodemailer");
 const _ = require("lodash");
 
 const constants = require("../../configs");
 
-const { templatesUrl, apiHeader, templateSelectOpts, templateSetSelectOpts } =
-  constants;
+const {
+  templatesUrl,
+  apiHeader,
+  email,
+  appPassword,
+  templateSelectOpts,
+  templateSetSelectOpts,
+} = constants;
 
 const getToDelete = async () => {
   cli.action.start("Fetching Templates");
@@ -158,12 +165,46 @@ const processTemplates = async (templates) => {
     }
   });
 
-  return noAttributes;
   cli.action.done();
+  return noAttributes;
+};
+
+const sendEmail = async (subdomain, recipient) => {
+  const date_ob = new Date();
+  const dateToday = date_ob.toLocaleDateString();
+
+  const mail = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: email,
+      pass: appPassword,
+    },
+  });
+
+  var mailOptions = {
+    from: email,
+    to: recipient,
+    subject: `${subdomain} template report ${dateToday}`,
+    text: `Hi ${subdomain}\n\nHere is this week's template report!\n\nBest Regards,\nMartin Jaycy Halum\nCustomer Reliability Engineer`,
+    attachments: [
+      {
+        path: `${subdomain}.zip`,
+      },
+    ],
+  };
+
+  mail.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email sent: " + info.response);
+    }
+  });
 };
 
 module.exports = {
   getToDelete,
   getTemplates,
   processTemplates,
+  sendEmail,
 };

@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 
 require("dotenv").config();
-const { BASE_URL, EMAIL, PASSWORD, SUBDOMAIN } = process.env;
+const { BASE_URL, EMAIL, PASSWORD, APP_PASSWORD, SUBDOMAIN } = process.env;
 
 const authUrl = `${BASE_URL}/api/auth`;
 const teamsUrl = `${BASE_URL}/api/teams`;
 const templatesUrl = `${BASE_URL}/api/`;
 const email = EMAIL;
 const password = PASSWORD;
+const appPassword = APP_PASSWORD;
 const subdomain = SUBDOMAIN;
 
 const apiHeader = [
@@ -168,6 +169,7 @@ module.exports = {
   templatesUrl,
   email,
   password,
+  appPassword,
   subdomain,
   apiHeader,
   templateSelectOpts,

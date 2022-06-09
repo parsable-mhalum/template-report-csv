@@ -39,6 +39,25 @@ const handler = async () => {
         type: "string",
       },
     })
+    .command("zip", "Archive output files", {
+      login: {
+        description: "Archive output files",
+        alias: "z",
+        type: "boolean",
+      },
+    })
+    .command("email", "Send Email", {
+      login: {
+        description: "Send Email",
+        alias: "e",
+        type: "boolean",
+      },
+    })
+    .option("recipient", {
+      alias: "r",
+      description: "Send Email To",
+      type: "string",
+    })
     .command("type", "Extract Template Type", {
       jobTemplate: {
         description: "Extract data for job templates or template sets",
@@ -83,61 +102,65 @@ const handler = async () => {
 
     authToken = await auth.loginUser(email, password);
     await storage.setItem("AUTH_TOKEN", authToken);
-  }
-
-  if (argv.ty === undefined) {
-    const { template_type } = await prompts(type_prompt);
-
-    type = template_type;
+  } else if (argv.z) {
+    await file_process.createZip(argv.t);
+  } else if (argv.e) {
+    await templates.sendEmail(argv.t, argv.r);
   } else {
-    type = argv.ty;
-  }
+    if (argv.ty === undefined) {
+      const { template_type } = await prompts(type_prompt);
 
-  if (argv.t === undefined) {
-    const { subdomain } = await prompts(team_prompt);
-    team = subdomain;
-  } else {
-    team = argv.t;
-  }
+      type = template_type;
+    } else {
+      type = argv.ty;
+    }
 
-  const TEAM_DATA = await auth.selectTeam(authToken, team);
+    if (argv.t === undefined) {
+      const { subdomain } = await prompts(team_prompt);
+      team = subdomain;
+    } else {
+      team = argv.t;
+    }
 
-  if (!argv.a && !argv.u) {
-    const { archivedTemplates } = await prompts(archive_prompt);
+    const TEAM_DATA = await auth.selectTeam(authToken, team);
 
-    archived = archivedTemplates;
-  } else if (argv.a && !argv.u) {
-    archived = argv.a;
-  } else if (!argv.a && argv.u) {
-    archived = !argv.u;
-  } else {
-    console.log("Error: Can only select either Archived or Un-archived");
-    error = true;
-  }
+    if (!argv.a && !argv.u) {
+      const { archivedTemplates } = await prompts(archive_prompt);
 
-  if (!argv.d && !argv.p) {
-    const { draftTemplates } = await prompts(drafts_prompt);
+      archived = archivedTemplates;
+    } else if (argv.a && !argv.u) {
+      archived = argv.a;
+    } else if (!argv.a && argv.u) {
+      archived = !argv.u;
+    } else {
+      console.log("Error: Can only select either Archived or Un-archived");
+      error = true;
+    }
 
-    published = !draftTemplates;
-  } else if (argv.p && !argv.d) {
-    published = argv.p;
-  } else if (argv.d && !argv.p) {
-    published = !argv.d;
-  } else {
-    console.log("Error: Can only select either Published or Drafts");
-    error = true;
-  }
+    if (!argv.d && !argv.p) {
+      const { draftTemplates } = await prompts(drafts_prompt);
 
-  if (!error) {
-    const TEMPLATES = await templates.getTemplates(
-      TEAM_DATA.id,
-      type,
-      archived,
-      published
-    );
-    // const FINAL_DATA = await templates.processTemplates(TEMPLATES);
+      published = !draftTemplates;
+    } else if (argv.p && !argv.d) {
+      published = argv.p;
+    } else if (argv.d && !argv.p) {
+      published = !argv.d;
+    } else {
+      console.log("Error: Can only select either Published or Drafts");
+      error = true;
+    }
 
-    await file_process.write(type, TEMPLATES, team, published, archived);
+    if (!error) {
+      const TEMPLATES = await templates.getTemplates(
+        TEAM_DATA.id,
+        type,
+        archived,
+        published
+      );
+      // const FINAL_DATA = await templates.processTemplates(TEMPLATES);
+
+      await file_process.write(type, TEMPLATES, team, published, archived);
+    }
   }
 };
 
